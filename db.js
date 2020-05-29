@@ -11,7 +11,7 @@ const pool = mysql.createPool({
  * @param query
  * @return {Promise<RowDataPacket[]>}
  */
-let runQuery = query => {
+let runQuery = async query => {
     return new Promise((resolve, reject) => {
         pool.query(query, (err, rows) => {
             if (err || rows.length === 0) {
@@ -22,37 +22,56 @@ let runQuery = query => {
     });
 };
 
-let logQuery = () => {
-
+/**
+ * Non-blocking?
+ *
+ * @param route
+ * @param referrer
+ * @param req
+ * @return {Promise<*>}
+ */
+let logQuery = async (route, referrer, req) => {
+    const query = "INSERT INTO log (route_id, referrer_id, request, ip, location, browser, referer) VALUES ("
+    return route;
 };
 
-let routeResolver = (path, callback) => {
-    const query = "SELECT route FROM routes WHERE path = " + path;
+let routeResolver = (path, req, callback) => {
+    const query = "SELECT route FROM routes WHERE path = '" + path + "'";
     runQuery(query)
-        .then(rowCheckerUtil)
-        .then()     // update log   todo
-        .then(rows => callback(rows[0].route))
-        .catch(callback(404));
+        .then(routeCheckerExtractor)
+        .then(route => logQuery(route, undefined, req))
+        .then(callback)
+        .catch(() => callback(404));
 };
 
-let referrerResolver = (refID, callback) => {
-    const query = "SELECT route_id FROM referrers WHERE ref_string = " + refID;     // Todo: NOT VALID
+let referrerResolver = (refID, req, callback) => {
+    const query = "SELECT routes.route FROM referrers INNER JOIN routes " +
+        "WHERE routes.id = referrers.route_id AND referrers.ref_string = '" + refID + "'";
     runQuery(query)
-        .then(rowCheckerUtil)
-        .then(rows => callback(rows[0].route))
-        .catch(callback(404));
+        .then(routeCheckerExtractor)
+        .then(route => logQuery(route, refID, req))
+        .then(callback)
+        .catch(() => callback(404));
 };
 
-// todo test
-let rowCheckerUtil = rows => {
+/**
+ *
+ * @param rows
+ * @return {string}
+ */
+let routeCheckerExtractor = rows => {
     if (rows.length > 1 || rows[0].route === undefined) {
         throw new Error("Invalid number of rows for such path");
     }
+    return rows[0].route;
 }
 
-runQuery("SELECT route FROM routes WHERE path = 'umass'")
-    .then(r => console.log(r[0].route))
-    .catch(console.error);
+// runQuery("SELECT route FROM routes WHERE path = 'umass'")
+//     .then(r => console.log(r[0].route))
+//     .catch(console.error);
+
+routeResolver('umass', undefined, console.log);
+referrerResolver('8f760259f7a44c2d', undefined, console.log)
 
 module.exports = {
     routeResolver: routeResolver,
