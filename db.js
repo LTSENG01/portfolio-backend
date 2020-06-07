@@ -40,7 +40,6 @@ let runQuery = async query => {
 let logQuery = async (route, referrer, req) => {
     try {
         let location = await getLocation(req.ip);
-        console.log(location);
         const query = "INSERT INTO log (route_id, referrer_id, request, ip, location, useragent) " +
                         `VALUES ((SELECT id FROM routes WHERE route = '${route}'), ` +
                         `(SELECT id FROM referrers WHERE ref_string = '${referrer}'), ` +
@@ -52,14 +51,6 @@ let logQuery = async (route, referrer, req) => {
     }
     return route;
 };
-
-/**
- * This callback is for handling routes after being resolved as used in routeResolver and referrerResolver.
- *
- * @callback routerCallback
- * @param {string|number} [route]
- * @param {Error} [err]
- */
 
 /**
  *
