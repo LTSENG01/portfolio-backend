@@ -31,12 +31,10 @@ router.get('/*', function(req, res, next) {
             }
             res.sendStatus(404);    // 404 on failure
         } else {
-            console.log("Route: " + route);
+            console.log(req.ip + " Route: " + route);
             res.redirect(302, route);   // 302 redirect on success
         }
     }
 });
-
-
 
 module.exports = router;
