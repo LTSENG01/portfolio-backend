@@ -9,6 +9,8 @@ const usersRouter = require('./routes/users');
 
 const app = express();
 
+app.set('trust proxy', 'loopback') // trust proxy for nginx reverse proxy
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
