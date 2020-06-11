@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/*', function(req, res, next) {
     // get the referrerID from the request
     let referrerID = req.query.ref;
-    if (referrerID !== undefined && referrerID.match("^[a-f0-9]{16}$")) {
+    if (referrerID !== undefined && referrerID.match("^[a-fA-F0-9]{16}$|^[a-fA-F0-9]{5}$")) {     // This regex matches 5 or 16 chars hexadecimal
         // referrer passed the regex, lookup referrer
         db.referrerResolver(referrerID, req, routerCallback);
     } else {
