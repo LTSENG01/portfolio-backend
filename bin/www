@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 const app = require('../app');
-const debug = require('debug')('portfolio-cloud:server');
+const debug = require('debug')('portfolio-backend:server');
 const http = require('http');
 
 /**
