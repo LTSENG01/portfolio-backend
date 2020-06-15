@@ -12,6 +12,7 @@ router.get('/*', function(req, res, next) {
     let referrerID = req.query.r || req.query.ref;
     if (referrerID !== undefined && referrerID.match("^[a-fA-F0-9]{16}$|^[a-fA-F0-9]{5}$")) {     // This regex matches 5 or 16 chars hexadecimal
         // referrer passed the regex, lookup referrer
+        console.log(referrerID);
         db.referrerResolver(referrerID, req, routerCallback);
     } else {
         // lookup route
